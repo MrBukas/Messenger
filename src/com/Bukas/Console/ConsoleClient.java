@@ -16,54 +16,65 @@ public class ConsoleClient implements Runnable{
     }
     @Override
     public void run() {
-        try(Scanner scanner = new Scanner(user.getSocket().getInputStream())){
+        try{
             PrintWriter printWriter = new PrintWriter(user.getSocket().getOutputStream(),true);
 
             System.out.println("New connection : " + user.getSocket());
 
-            printWriter.println("Select 'login' or 'register'");
+            user.write("Select 'login' or 'register'");
 
-            String option = scanner.nextLine();
-            while (!option.toLowerCase().equals("login")&&!option.toLowerCase().equals("register")){
+            String command = user.read();
+            while (!command.toLowerCase().equals("login")&&!command.toLowerCase().equals("register")){
                 printWriter.println("Wrong command. Try again");
-                option = scanner.nextLine();
+                command = user.read();
             }
-            getUserLogin(option,scanner,printWriter);
+            getUserLogin(command,user);
+
+            do {
+                user.write("Enter command 'message' or 'exit': ");
+                command = user.read();
+                switch (command){
+                    case "message" : ConsoleMessage.processMessage(user);
+                }
+            }while (!command.equals("exit"));
+            user.closeSocket();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    private User getUserLogin(String option, Scanner scanner, PrintWriter printWriter){
+    private void getUserLogin(String option,User user){
         String username;
         String password;
         if(option.equals("register")){
-            printWriter.println("Enter username: ");
-            username = scanner.nextLine();
-            printWriter.println("Enter password: ");
-            password = Registsration.hashPassword(scanner.nextLine());
+            user.write("Enter username: ");
+            username = user.read();
+            user.write("Enter password: ");
+            password = Registsration.hashPassword(user.read());
             int res = Registsration.registerUser(username,password);
             if (res == 0){
-                printWriter.println("Registered successfully");
+                user.write("Registered successfully");
             }else if (res == 1){
-                printWriter.println("Selected username already exists. Try another one");
-                getUserLogin(option,scanner,printWriter);
+                user.write("Selected username already exists. Try another one");
+                getUserLogin(option,user);
             }else {
-                printWriter.println("Error " + res);
+                user.write("Error " + res);
             }
         }
         //Logging in
-        printWriter.println("Enter username: ");
-        username = scanner.nextLine();
-        printWriter.println("Enter password: ");
-        password = Registsration.hashPassword(scanner.nextLine());
+        user.write("Enter username: ");
+        username = user.read();
+        user.write("Enter password: ");
+        password = Registsration.hashPassword(user.read());
         if (Login.attemptLogin(username,password)){
             user.setUsername(username);
-            printWriter.println("You're logged in!");
+            user.write("You're logged in!");
+            System.out.println(user.getUsername() + " logged in");
         }else {
-            printWriter.println("Failed to login. Try again");
-            getUserLogin("login",scanner,printWriter);
+            user.write("Failed to login. Try again");
+            System.out.println(username + " failed to login");
+            getUserLogin("login",user);
         }
-        return null;
+        return;
     }
 }

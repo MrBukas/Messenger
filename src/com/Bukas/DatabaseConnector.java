@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 public class DatabaseConnector {
 
-    static final private String userName = "root";
+    static final private String username = "root";
     static final private String password = "1234";
     static final private String connectionUrl = "jdbc:mysql://localhost:3306/messenger?verifyServerCertificate=false&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=CONVERT_TO_NULL";
     static Connection connection = connect();
@@ -18,15 +18,15 @@ public class DatabaseConnector {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        System.out.println("Connected");
         try {
-            return DriverManager.getConnection(connectionUrl,userName,password);
+            return DriverManager.getConnection(connectionUrl, username, password);
         } catch (SQLException e) {
             System.out.println("Connection failed");
             e.printStackTrace();
             return null;
         }
     }
+
     static boolean checkIfUsernameNotTaken(String username){
         try {
             ResultSet resultSet = connection.createStatement().executeQuery("select COUNT(username) from users where username = \'" + username + "\'");
@@ -38,27 +38,15 @@ public class DatabaseConnector {
             return false;//Не уверен что это обрабатывается так
         }
     }
-    static boolean sendRegisterRequest(String username, String password){
+    static int getUserId(String username){
         try {
-            connection.createStatement().executeUpdate("INSERT INTO users(username,password)"+" VALUES (\""+username+"\",\""+password+"\")");
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-    static boolean attemptLogin(String username,String password){
-        ResultSet resultSet = null;
-        try {
-            resultSet = connection.createStatement().executeQuery("select COUNT(*) from users where username = \'" + username + "\' and password = \'" + password + "\'");
+            ResultSet resultSet = connection.createStatement().executeQuery("select user_id from users where username = \'" + username + "\' COLLATE utf8mb4_0900_as_cs");
             resultSet.first();
-            if (resultSet.getInt(1) == 1){
-                return true;
-            }else return false;
+            return resultSet.getInt(1);
         } catch (SQLException e) {
             e.printStackTrace();
+            return -1;
         }
-        return false;
     }
 
 

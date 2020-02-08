@@ -27,7 +27,7 @@ public class Registsration {
         //0 - Успешная регистрация
         //1 - Имя пользователя уже существует
         if (DatabaseConnector.checkIfUsernameNotTaken(username)){
-            if (DatabaseConnector.sendRegisterRequest(username,password)){
+            if (Login.sendRegisterRequest(username,password)){
                 return 0;
             }
         }else {
