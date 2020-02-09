@@ -27,7 +27,7 @@ public class DatabaseConnector {
         }
     }
 
-    static boolean checkIfUsernameNotTaken(String username){
+    public static boolean checkIfUsernameNotTaken(String username){
         try {
             ResultSet resultSet = connection.createStatement().executeQuery("select COUNT(username) from users where username = \'" + username + "\'");
             resultSet.first();
@@ -38,7 +38,7 @@ public class DatabaseConnector {
             return false;//Не уверен что это обрабатывается так
         }
     }
-    static int getUserId(String username){
+    public static int getUserId(String username){
         try {
             ResultSet resultSet = connection.createStatement().executeQuery("select user_id from users where username = \'" + username + "\' COLLATE utf8mb4_0900_as_cs");
             resultSet.first();

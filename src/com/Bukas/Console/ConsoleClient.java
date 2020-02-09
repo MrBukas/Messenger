@@ -31,10 +31,11 @@ public class ConsoleClient implements Runnable{
             getUserLogin(command,user);
 
             do {
-                user.write("Enter command 'message' or 'exit': ");
+                user.write("Enter command 'message', 'inbox' or 'exit': ");
                 command = user.read();
                 switch (command){
-                    case "message" : ConsoleMessage.processMessage(user);
+                    case "message" : ConsoleMessage.processMessage(user);break;
+                    case "inbox" : ConsoleInbox.showInboxMessages(user);
                 }
             }while (!command.equals("exit"));
             user.closeSocket();

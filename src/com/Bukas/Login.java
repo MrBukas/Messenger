@@ -9,7 +9,7 @@ public class Login {
     public static boolean attemptLogin(String username,String password){
         ResultSet resultSet = null;
         try {
-            resultSet = connection.createStatement().executeQuery("select COUNT(*) from users where username = \'" + username + "\' and password = \'" + password + "\'");
+            resultSet = connection.createStatement().executeQuery("select COUNT(*) from users where username = \'" + username + "\' COLLATE utf8mb4_0900_as_cs and password = \'" + password + "\' COLLATE utf8mb4_0900_as_cs");
             resultSet.first();
             if (resultSet.getInt(1) == 1){
                 return true;
