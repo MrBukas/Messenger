@@ -1,13 +1,11 @@
 package com.Bukas.Console;
 
 import com.Bukas.Login;
-import com.Bukas.Registsration;
+import com.Bukas.RegistsrationConsole;
 import com.Bukas.User;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.Socket;
-import java.util.Scanner;
 
 public class ConsoleClient implements Runnable{
     User user;
@@ -51,8 +49,8 @@ public class ConsoleClient implements Runnable{
             user.write("Enter username: ");
             username = user.read();
             user.write("Enter password: ");
-            password = Registsration.hashPassword(user.read());
-            int res = Registsration.registerUser(username,password);
+            password = RegistsrationConsole.hashPassword(user.read());
+            int res = RegistsrationConsole.registerUser(username,password);
             if (res == 0){
                 user.write("Registered successfully");
             }else if (res == 1){
@@ -66,7 +64,7 @@ public class ConsoleClient implements Runnable{
         user.write("Enter username: ");
         username = user.read();
         user.write("Enter password: ");
-        password = Registsration.hashPassword(user.read());
+        password = RegistsrationConsole.hashPassword(user.read());
         if (Login.attemptLogin(username,password)){
             user.setUsername(username);
             user.write("You're logged in!");

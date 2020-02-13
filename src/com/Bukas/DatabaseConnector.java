@@ -48,6 +48,30 @@ public class DatabaseConnector {
             return -1;
         }
     }
+    public static String getUsernameById(int id){
+        try {
+            ResultSet resultSet = connection.createStatement().executeQuery("select username from users where user_id = \'" + id + "\'");
+            resultSet.first();
+            return resultSet.getString(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Error";
+        }
+    }
+    public static int registerUser(String username, String password) {
+        //Коды:
+        //-1 - Неизвестная ошибка
+        //0 - Успешная регистрация
+        //1 - Имя пользователя уже существует
+        if (DatabaseConnector.checkIfUsernameNotTaken(username)) {
+            if (Login.sendRegisterRequest(username, password)) {
+                return 0;
+            }
+        } else {
+            return 1;
+        }
+        return -1;
+    }
 
 
 

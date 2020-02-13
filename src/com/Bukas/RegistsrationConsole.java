@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class Registsration {
+public class RegistsrationConsole {//TODO В этом классе оставить толко хеширование, регистрацию перенести в DatabaseConnector
     public static String hashPassword(String password){
         MessageDigest md = null;
         try {
@@ -21,16 +21,16 @@ public class Registsration {
         String hex = String.format("%064x", new BigInteger(1, digest));
         return hex;
     }
-    public static int registerUser(String username, String password){
+    public static int registerUser(String username, String password) {
         //Коды:
         //-1 - Неизвестная ошибка
         //0 - Успешная регистрация
         //1 - Имя пользователя уже существует
-        if (DatabaseConnector.checkIfUsernameNotTaken(username)){
-            if (Login.sendRegisterRequest(username,password)){
+        if (DatabaseConnector.checkIfUsernameNotTaken(username)) {
+            if (Login.sendRegisterRequest(username, password)) {
                 return 0;
             }
-        }else {
+        } else {
             return 1;
         }
         return -1;
