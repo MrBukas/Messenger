@@ -1,9 +1,6 @@
 package com.Bukas.Android;
 
-import com.Bukas.DatabaseConnector;
-import com.Bukas.Login;
-import com.Bukas.Main;
-import com.Bukas.User;
+import com.Bukas.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,9 +21,10 @@ public class AndroidClient implements Runnable{
             String command = user.read();
             switch (command){
                 case "talkedUsers" : getTalkedUsers(user); break;
-                case "dialog" : getDialog(user,user.read());
+                case "dialog" : getDialog(user,user.read()); break;
+                case "message" : sendMessage(user,user.read(),user.read()); break;
                 default:
-                    System.out.println(command);
+                    System.out.println(command + " no command");
             }
         }
     }
@@ -70,14 +68,25 @@ public class AndroidClient implements Runnable{
     void getDialog(User user, String talker){
         int talkerId = DatabaseConnector.getUserId(talker);
         try {
-            ResultSet resultSet = Main.connection.createStatement().executeQuery("SELECT message FROM messages where receiver_id = " + user.getId() +" UNION SELECT message FROM messages where sender_id = " + talkerId);
-            resultSet.first();
+            ResultSet resultSet = Main.connection.createStatement().executeQuery("SELECT message,sender_id,created_on FROM messages where (receiver_id = " + user.getId() + " and sender_id = " + talkerId + ") or (receiver_id =  " + talkerId + " and sender_id = "+user.getId() +")");
+
+            user.write(String.valueOf(user.getId()));
+            if (resultSet.first()){
+
             do {
-                user.write(String.valueOf(resultSet.getString(1)));
+                System.out.println("line");
+                user.write(String.valueOf(resultSet.getString("message")));
+                user.write(String.valueOf(resultSet.getInt("sender_id")));
             }while (resultSet.next());
+            }
             user.write("endl");
+            System.out.println("endl");
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+    void sendMessage(User user, String receiver, String message){
+        System.out.println("message Android");
+        MessageProcessor.sendMessage(user.getId(),receiver,message);
     }
 }
