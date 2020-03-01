@@ -15,7 +15,11 @@ public class AndroidClient implements Runnable{
 
     @Override
     public void run() {
-        auth(user);
+        String loginOrReg = user.read();
+        switch (loginOrReg){
+            case "login": auth(user); break;
+            case "reg" : reg(user);
+        }
         System.out.println(user.getUsername() + " login (Android)");
         while (true){
             String command = user.read();
@@ -40,6 +44,34 @@ public class AndroidClient implements Runnable{
         }
         user.setUsername(username);
         user.write("0");
+
+    }
+    void auth(String username, String password){
+        if (!Login.attemptLogin(username,password)){
+            user.write("1");
+            System.out.println(username + " failed login (Android)");
+            auth(user);
+        }
+        user.setUsername(username);
+        user.write("0");
+
+    }
+    void reg(User user){
+        String username;
+        String password;
+        username = user.read();
+        password = user.read();
+        if (DatabaseConnector.checkIfUsernameNotTaken(username)) {
+            if (Login.sendRegisterRequest(username, password)) {
+                user.write("0");//Регистрация успешна
+                auth(user);
+            }
+        } else {
+            user.write("1");//Имя занято
+        }
+        user.write("-1");// ошибка
+        //user.setUsername(username);
+        //user.write("0");
 
     }
     void getTalkedUsers(User user){
@@ -74,7 +106,7 @@ public class AndroidClient implements Runnable{
             if (resultSet.first()){
 
             do {
-                System.out.println("line");
+               // System.out.println("line");
                 user.write(String.valueOf(resultSet.getString("message")));
                 user.write(String.valueOf(resultSet.getInt("sender_id")));
             }while (resultSet.next());

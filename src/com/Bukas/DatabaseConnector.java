@@ -9,14 +9,15 @@ public class DatabaseConnector {
 
     static final private String username = "root";
     static final private String password = "1234";
-    static final private String connectionUrl = "jdbc:mysql://localhost:3306/messenger?verifyServerCertificate=false&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=CONVERT_TO_NULL";
+    static final private String connectionUrl = "jdbc:mysql://localhost:3306/messenger?verifyServerCertificate=false&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=CONVERT_TO_NULL&autoReconnect=true";
     static Connection connection = connect();
 
     static Connection connect(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            System.out.println("ClassNotFoundException");
+            //e.printStackTrace();
         }
         try {
             return DriverManager.getConnection(connectionUrl, username, password);

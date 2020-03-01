@@ -20,7 +20,7 @@ public class Login {
         return false;
     }
 
-    static boolean sendRegisterRequest(String username, String password){
+    public static boolean sendRegisterRequest(String username, String password){
         try {
             connection.createStatement().executeUpdate("INSERT INTO users(username,password)"+" VALUES (\""+username+"\",\""+password+"\")");
             return true;
