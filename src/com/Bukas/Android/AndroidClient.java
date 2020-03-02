@@ -16,13 +16,16 @@ public class AndroidClient implements Runnable{
     @Override
     public void run() {
         String loginOrReg = user.read();
+        System.out.println(loginOrReg);
+
         switch (loginOrReg){
-            case "login": auth(user); break;
-            case "reg" : reg(user);
+            case "login" : auth(user); break;
+            case "reg" : reg(user); break;
         }
         System.out.println(user.getUsername() + " login (Android)");
         while (true){
             String command = user.read();
+            System.out.println(command);
             switch (command){
                 case "talkedUsers" : getTalkedUsers(user); break;
                 case "dialog" : getDialog(user,user.read()); break;
@@ -40,6 +43,7 @@ public class AndroidClient implements Runnable{
         if (!Login.attemptLogin(username,password)){
             user.write("1");
             System.out.println(username + " failed login (Android)");
+            user.read();
             auth(user);
         }
         user.setUsername(username);
