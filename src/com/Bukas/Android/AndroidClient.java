@@ -30,6 +30,7 @@ public class AndroidClient implements Runnable{
                 case "talkedUsers" : getTalkedUsers(user); break;
                 case "dialog" : getDialog(user,user.read()); break;
                 case "message" : sendMessage(user,user.read(),user.read()); break;
+                case "isUserExists" : isUserExist(user.read()); break;
                 default:
                     System.out.println(command + " no command");
             }
@@ -57,7 +58,7 @@ public class AndroidClient implements Runnable{
             auth(user);
         }
         user.setUsername(username);
-        user.write("0");
+        //user.write("0");
 
     }
     void reg(User user){
@@ -68,12 +69,14 @@ public class AndroidClient implements Runnable{
         if (DatabaseConnector.checkIfUsernameNotTaken(username)) {
             if (Login.sendRegisterRequest(username, password)) {
                 user.write("0");//Регистрация успешна
-                auth(user);
+                auth(username,password);
+            }else {
+                user.write("-1");// ошибка
             }
         } else {
             user.write("1");//Имя занято
         }
-        user.write("-1");// ошибка
+
         //user.setUsername(username);
         //user.write("0");
 
@@ -82,10 +85,11 @@ public class AndroidClient implements Runnable{
         List<Integer> IDs = new ArrayList<>();
         try {
             ResultSet resultSet = Main.connection.createStatement().executeQuery("SELECT sender_id FROM messages where receiver_id = " + user.getId() +" UNION SELECT receiver_id FROM messages where sender_id = " + user.getId());
-            resultSet.first();
-            do {
-                IDs.add(resultSet.getInt(1));
-            }while (resultSet.next());
+            if (resultSet.first()){
+                do {
+                    IDs.add(resultSet.getInt(1));
+                }while (resultSet.next());
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -124,5 +128,8 @@ public class AndroidClient implements Runnable{
     void sendMessage(User user, String receiver, String message){
         System.out.println("message Android");
         MessageProcessor.sendMessage(user.getId(),receiver,message);
+    }
+    void isUserExist(String username){
+        user.write(String.valueOf(DatabaseConnector.getUserId(username)));
     }
 }
